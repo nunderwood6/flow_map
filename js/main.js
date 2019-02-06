@@ -7,8 +7,8 @@ var svg = d3.select("div.map")
             .attr("height", "100%");
 
 //set svg width
-var w = $("div.map").width();
-var h = $("div.map").height();
+var w = parseFloat(d3.select("div.map").style("width"));
+var h = parseFloat(d3.select("div.map").style("height"));
 
 //set projection
 //center on boulder
@@ -38,14 +38,20 @@ const path = d3.geoPath()
                .projection(equalEarth);
 
 //create scales
-var colorScale = d3.scaleSequential(d3.interpolateMagma);
+var googleColorScale = d3.scaleOrdinal()
+                      .domain([1,2,3,4])
+                      .range(["#4285F4","#DB4437","#F4B400","#0F9D58"]);
 
 //d3v5 uses promises to load data
 //use Promise.all([]).then for multiple files
-d3.json("data/ne_110m_land.geojson")
-  .then(function(landjson){
-
-    var land = landjson.features;
+Promise.all([
+  d3.json("data/ne_110m_land.geojson"),
+  d3.json("data/ne_110m_admin_0_countries.geojson")
+  ])
+  .then(function(jsons){
+ 
+    var land = jsons[0].features;
+    var countries = jsons[1].features;
 
     svg.selectAll(".land")
                   .data(land)
@@ -56,10 +62,57 @@ d3.json("data/ne_110m_land.geojson")
                      // .attr("stroke", "#ddd");
 
 
+//get centroids of countries
+for(country of countries){
+    var centroid = d3.geoCentroid(country);
+    country.properties.centroid = centroid;
+
+}
+
+
+
+    var countries = svg.selectAll(".countries")
+                  .data(countries)
+                  .enter()
+                  .append("path")
+                      .attr("d", function(d){
+                        return path({
+                          type:"LineString",
+                          coordinates: [d.properties.centroid,
+                                        [centerLocation.longitude,centerLocation.latitude]]
+                        });
+                      })
+                      .attr("stroke", function(d){
+                           return googleColorScale(Math.round(Math.random()*4));
+                      })
+                      .attr("stroke-width", .5)
+                      .attr("fill", "none")
+                      .attr("stroke-dasharray", "0%,100%")
+                      .transition()
+                      .duration(3000)
+                      .ease(d3.easeLinear)
+                      .attr("stroke-dasharray", "100%,0%");
+
+
+
+/*
+                      .transition()
+                        .duration(2000)
+                        .attr("d", function(d){
+                        return path({
+                          type:"LineString",
+                          coordinates: [[centerLocation.longitude,centerLocation.latitude],
+                                         d.properties.centroid]
+                        });
+                        });;
+*/
+
+
+
 
   }).catch(function(error){
     if(error){
-      console.log("Error loading files");
+      console.log(error);
     }
   });
 
