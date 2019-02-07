@@ -349,7 +349,7 @@ setTimeout(function(){
           return h/7 + "px";
         })
         .style("color", "#F4B400")
-        .text("but also, the snacks are unreal.");
+        .text("but also, the snacks are UNREAL.");
 
 //animate in from left
 setTimeout(function(){
