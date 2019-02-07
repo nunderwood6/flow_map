@@ -12,3 +12,15 @@ div#svgHolder{
 	border: solid 1px black;
 	position: relative;
 }
+
+div#explanation{
+	width:80%;
+	text-shadow: none;
+	font-size: 16px;
+}
+
+div#explanation h1{
+	font-size: 24px;
+	text-align: center;
+	text-decoration: underline;
+}
