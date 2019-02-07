@@ -1,9 +1,14 @@
+body {
+	font-family: proxima-nova, sans-serif;
+	font-size: 40px;
+	text-shadow: 1px 1px 1px #eee;
+}
+
 div{
 	margin: 0 auto;
 }
 
-div.map{
-	width: 840px;
-	height: 400px;
-	
+div#svgHolder{
+	border: solid 1px black;
+	position: relative;
 }
